@@ -1,0 +1,52 @@
+/* styles.css */
+.image{
+    border: thin #c0c0c0 solid;
+  display: flex;
+  flex-flow: column;
+  padding: 5px;
+  width: 70vw;
+  height: 70vw;
+  margin: auto;
+}
+#title{
+    text-align: center;
+    margin: auto;
+    width: 70vh;
+}
+#artist{
+    text-align: center;
+    margin: auto;
+    width: 70vh;
+}
+
+.progress{ 
+}
+#seekbar{
+display: flex;
+margin: auto;
+width: 90vw;
+height: 1vh;
+}
+#max{
+    margin-left: 67vw;
+    text-align: right;
+}
+#pause{
+
+}
+#play{
+
+}
+#next{
+
+}
+.panel{
+    /* border: 1px #000 solid; */
+    height: 10vh;
+    display: flex;
+    justify-content: space-around;
+}
+
+
+
+/* Add styles here to customize the appearance of your app */

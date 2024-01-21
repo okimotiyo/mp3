@@ -1,0 +1,18 @@
+{
+  "name": "kind-crown-reach-9ar0s",
+  "productName": "kind-crown-reach-9ar0s",
+  "description": "My Electron application description",
+  "keywords": [],
+  "main": "./main.js",
+  "version": "1.0.0",
+  "author": "lucas",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "music-metadata": "^7.14.0"
+  },
+  "devDependencies": {
+    "electron": "27.1.3"
+  }
+}

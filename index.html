@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' blob:;">
+
+  <link href="./styles.css" rel="stylesheet">
+  <title>Hello World</title>
+</head>
+
+<body>
+  <audio id="playing" src="" type="audio/mpeg"></audio>
+  <figure class="image">
+    <img id ="image" >
+  </figure>
+  <div class="info">
+    <h3 id="title"></h3>
+    <p id="artist"></p>
+  </div>
+  <div class="progress">
+    <input id="seekbar" type="range"min="0" max="100" value="0" step="1" >
+    <p><span id="now">00:00</span><span id="max">00:00</span></p>
+  </div>
+  <figure class="panel">
+    <img id="shuffle" type="button" src="./image/shuffle.jpg" width="30" height="20">
+    <img id="prev" type="button" src="./image/prev.jpg" width="40" height="40">
+    <!-- <button id="play" type="button" data-playing="false" role="switch" aria-checked="false"> -->
+      <img id="play" type="button" data-playing="false" role="switch" aria-checked="false" src="./image/play.jpg" width="50" height="50">
+    <!-- </button> -->
+    
+    <img id="next" type="button" src="./image/next.jpg" width="40" height="40">
+    <img id="repeat" type="button" src="./image/repeat.jpg" width="20" height="20">
+  </figure>
+</body>
+<script type="module" src="./renderer.mjs"></script>
+
+</html>
