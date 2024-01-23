@@ -8,12 +8,14 @@ var num = 0;
 const playing = document.getElementById("playing");
 var playButton = document.querySelector("#play");
 var title = document.querySelector("#title");
-let animationFrameId;
-let durationInSeconds;
-var shuffle = false;
-var repeat = false;
-var seekedTime;
+var animationFrameId;
+var durationInSeconds;
+// var shuffle = false;
+// var repeat = false;
+
 const seekbar = document.getElementById("seekbar");
+
+//ミュージックフォルダとファイルのパスを設定
 electron.getMusicFolderPath().then((musicFolder) => {
     // console.log('Music Folder Path:', musicFolder[0]);
 
@@ -26,43 +28,45 @@ electron.getMusicFolderPath().then((musicFolder) => {
     path = musicFolder[0];
     musics = [].concat(musicArray);
 
-
     audioPlayer();
 
 });
 
+//web Audio APIで使用するコンストラクター
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 const ctx = new AudioContext();
 
+//↑で設定したファイルの読み込み
 function audioPlayer() {
     ctx.suspend();
     playing.src = path + "/" + musics[num];
     const audioPath = playing.src.substring(8)
 
-    console.log('Music Folder :', musics[num]);
+    // console.log('Music Folder :', musics[num]);
 
 
+    //メタデータから画像、タイトル、アーティスト名を抜き出して表示
     mm.parseFile(audioPath)
         .then(metadata => {
             console.log('ID3 Metadata:', metadata.common);
             const jacket = metadata.common.picture[0].data
-            console.log(jacket);
-            var blob = new Blob([jacket], { type: 'image/jpeg' }); // typeを適切な画像形式に合わせて設定
-
-            // BlobオブジェクトをURLに変換
+            // console.log(jacket);
+            var blob = new Blob([jacket], { type: 'image/jpeg' }); 
             var imageUrl = URL.createObjectURL(blob);
             imageUrl = imageUrl;
             console.log(imageUrl);
-            // 画像要素を作成して表示
+            // 画像要素を表示
             image.src = imageUrl;
             console.log(image.src);
 
+            //タイトル
             if(metadata.common.title!=null){
                 title.innerHTML=metadata.common.title;
             }else{
                 title.innerHTML=musics[num]
             }
 
+            //アーティスト
             const artist = document.getElementById("artist");
             if(metadata.common.artist!=null){
             artist.innerHTML=metadata.common.artist;
@@ -74,13 +78,24 @@ function audioPlayer() {
 
         })
         .catch(err => {
-            console.error('Error reading ID3 metadata:', err.message);
+            console.error('Can not reading ID3 metadata:', err.message);
         });
 
+
+        //楽曲の長さを取得
+        function fetchArrayBuffer(url) {
+            return fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.arrayBuffer();
+                });
+        }
+        
     fetchArrayBuffer(playing.src)
         .then(arrayBuffer => {
 
-            // ArrayBufferをdecode
             return new Promise((resolve, reject) => {
                 ctx.decodeAudioData(arrayBuffer, (audioBuffer) => {
                     // AudioBufferのdurationを取得
@@ -94,7 +109,7 @@ function audioPlayer() {
             });
         })
         .then(duration => {
-            // console.log('音声のduration (秒):', duration);
+            // console.log('duration (秒):', duration);
             displayDuration(duration);
         })
         .catch(error => {
@@ -110,16 +125,11 @@ const audioElement = document.querySelector("audio");
 // Web Audio API内で使える形に変換
 const track = ctx.createMediaElementSource(audioElement);
 
-const bufferSourceNode = ctx.createBufferSource();
-
-
-
-
+//再生、曲送りボタンの処理
 playButton.addEventListener("click", function () {
     if (ctx.state === "suspended") {
         ctx.resume();
     }
-    // 出力につなげる
     track.connect(ctx.destination);
     if (this.dataset.playing == "false") {
         audioElement.play();
@@ -146,7 +156,6 @@ document.querySelector("#next").addEventListener("click", function () {
         ctx.resume();
     }
 
-    // 出力につなげる
     track.connect(ctx.destination);
     if (playButton.dataset.playing == "true") {
         audioElement.play();
@@ -170,7 +179,6 @@ document.querySelector("#prev").addEventListener("click", function () {
         ctx.resume();
     }
 
-    // 出力につなげる
     track.connect(ctx.destination);
     if (playButton.dataset.playing == "true") {
         audioElement.play();
@@ -184,9 +192,10 @@ document.querySelector("#prev").addEventListener("click", function () {
     displayDuration();
 });
 
+
+//再生時間（現在）の表示
 function displayCurrentTime() {
     let currentTimeInSeconds = audioElement.currentTime;
-    // console.clear();
 
     let currentminutes = Math.floor(currentTimeInSeconds / 60);
     let currentseconds = Math.floor(currentTimeInSeconds % 60);
@@ -197,11 +206,11 @@ function displayCurrentTime() {
 
     var now = document.querySelector("#now");
     now.innerHTML = ` ${currentminutes}:${currentseconds}`;
-    // now.innerHTML = audioElement.currentTime;
     seekbar.value = 0 + (100 - 0) * (audioElement.currentTime / durationInSeconds);
     animationFrameId = requestAnimationFrame(displayCurrentTime);
 }
 
+//再生時間（最大）の表示
 function displayDuration(duration) {
 
     // AudioBufferのdurationプロパティを使用して曲の長さを取得
@@ -216,29 +225,21 @@ function displayDuration(duration) {
     max.innerHTML = ` ${durationminutes}:${durationseconds}`;
 
 }
+
+//初期化
 function clearPlayer() {
     now.innerHTML = "00:00";
     seekbar.value = 0;
 }
 
-function fetchArrayBuffer(url) {
-    return fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.arrayBuffer();
-        });
-}
 
-
+//シークバー操作
 document.addEventListener("DOMContentLoaded", function () {
-    // Set initial value
     now.innerText = "00:00";
 
-    // Add an input event listener to the slider
     seekbar.addEventListener("input", function () {
-        // Update the displayed value when the slider value changes
+        var seekedTime;
+        //楽曲の長さ*{シークバーの値(0～100)}%に現在時間を変更
         seekedTime = (seekbar.value / 100) * durationInSeconds;
         let durationminutes = Math.floor(seekedTime / 60);
         let durationseconds = Math.floor(seekedTime % 60);
@@ -246,41 +247,9 @@ document.addEventListener("DOMContentLoaded", function () {
         // 2桁表示のためのゼロパディング
         durationminutes = durationminutes < 10 ? '0' + durationminutes : durationminutes;
         durationseconds = durationseconds < 10 ? '0' + durationseconds : durationseconds;
-        // seekbarElement.innerText =  durationInSeconds;
         now.innerHTML = ` ${durationminutes}:${durationseconds}`;
         audioElement.currentTime = seekedTime;
     });
 });
 
 
-document.querySelector("#shuffle").addEventListener("click", function () {
-
-    if (repeat == false) {
-        shuffle = true;
-        repeat = false;
-    } else {
-        shuffle = false
-    }
-});
-
-document.querySelector("#repeat").addEventListener("click", function () {
-    if (repeat == false) {
-        repeat = true;
-        shuffle = false
-    } else {
-        repeat = false;
-    }
-});
-
-audioElement.addEventListener('ended', function () {
-    if (shuffle == true) {
-        num = Math.random() * Math.floor(Math.random() * ((musics.length - 1) - 0 + 1)) + 0;
-        document.getbyId("next").click();
-    } else if (repeat == true) {
-        num = num - 1;
-        document.getbyId("next").click();
-    } else {
-        document.getbyId("next").click();
-    }
-
-});
