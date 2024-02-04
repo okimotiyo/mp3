@@ -1,50 +1,60 @@
 /* styles.css */
-.image{
+body {
+    background-color: #000;
+}
+
+.image {
     border: thin #c0c0c0 solid;
-  display: flex;
-  flex-flow: column;
-  padding: 5px;
-  width: 70vw;
-  height: 70vw;
-  margin: auto;
-}
-#title{
-    text-align: center;
+    display: flex;
+    flex-flow: column;
+    padding: 5px;
+    width: 70vw;
+    height: 70vw;
     margin: auto;
-    width: 70vh;
 }
-#artist{
+
+#title {
     text-align: center;
     margin: auto;
     width: 70vh;
 }
 
-.progress{ 
+#artist {
+    text-align: center;
+    margin: auto;
+    width: 70vh;
 }
-#seekbar{
-display: flex;
-margin: auto;
-width: 90vw;
-height: 1vh;
+
+.progress {}
+
+#seekbar {
+    display: flex;
+    margin: auto;
+    width: 90vw;
+    height: 1vh;
 }
-#max{
+
+#max {
     margin-left: 67vw;
     text-align: right;
 }
-#pause{
 
-}
-#play{
+#pause {}
 
-}
-#next{
+#play {}
 
+#next {}
+
+#repeat {
+    background: linear-gradient( rgb(255, 255, 255) 0%, rgb(173, 254, 235) 0%, rgb(0, 214, 164) 39%, rgb(0, 193, 157) 54%, rgb(0, 198, 181) 74%, rgb(0, 187, 255) 100%);
+    border-radius: 50%;
+    padding: 6px;
 }
-.panel{
-    /* border: 1px #000 solid; */
+
+.panel {
     height: 10vh;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
 }
 
 

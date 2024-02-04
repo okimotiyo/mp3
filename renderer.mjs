@@ -1,5 +1,4 @@
 const electron = window.electron;
-
 const mm = electron.getMusicMetaData;
 var path = "";
 var musics = [];
@@ -133,11 +132,13 @@ playButton.addEventListener("click", function () {
     track.connect(ctx.destination);
     if (this.dataset.playing == "false") {
         audioElement.play();
-        this.dataset.playing = "true"
+        this.dataset.playing = "true";
+        this.src = "./image/pause.png";
         displayCurrentTime();
     } else if (this.dataset.playing == "true") {
         audioElement.pause();
-        this.dataset.playing = "false"
+        this.dataset.playing = "false";
+        this.src = "./image/play.png";
         cancelAnimationFrame(animationFrameId);
         ctx.suspend();
     }
@@ -253,3 +254,13 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
+document.querySelector("#repeat").addEventListener("click", function () {
+
+    if(audioElement.loop==true){
+        audioElement.loop=false
+        console.log("loop=false")
+    }else{
+        audioElement.loop=true
+        console.log("loop=true")
+    }
+});
