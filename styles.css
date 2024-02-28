@@ -1,6 +1,6 @@
 /* styles.css */
 body {
-    background-color: #000;
+    /* background-color: #000; */
 }
 
 .image {
@@ -46,9 +46,9 @@ body {
 #next {}
 
 #repeat {
-    background: linear-gradient( rgb(255, 255, 255) 0%, rgb(173, 254, 235) 0%, rgb(0, 214, 164) 39%, rgb(0, 193, 157) 54%, rgb(0, 198, 181) 74%, rgb(0, 187, 255) 100%);
+    /* background: linear-gradient( rgb(255, 255, 255) 0%, rgb(173, 254, 235) 0%, rgb(0, 214, 164) 39%, rgb(0, 193, 157) 54%, rgb(0, 198, 181) 74%, rgb(0, 187, 255) 100%);
     border-radius: 50%;
-    padding: 6px;
+    padding: 6px; */
 }
 
 .panel {
