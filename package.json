@@ -10,7 +10,8 @@
     "start": "electron ."
   },
   "dependencies": {
-    "music-metadata": "^7.14.0"
+    "music-metadata": "^7.14.0",
+    "node-id3": "^0.2.6"
   },
   "devDependencies": {
     "electron": "27.1.3"

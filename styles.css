@@ -13,16 +13,22 @@ body {
     margin: auto;
 }
 
+.info{
+    display: block;
+}
+
 #title {
     text-align: center;
     margin: auto;
     width: 70vh;
+    /* border: thin #c0c0c0 solid; */
 }
 
 #artist {
     text-align: center;
     margin: auto;
     width: 70vh;
+    /* border: thin #c0c0c0 solid; */
 }
 
 .progress {}

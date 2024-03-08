@@ -1,16 +1,15 @@
 const electron = window.electron;
 const mm = electron.getMusicMetaData;
-var path = "";
-var musics = [];
-var image = document.getElementById("image");;
-var num = 0;
+const id3 = electron.id3Write;
+let path = "";
+let musics = [];
+let image = document.getElementById("image");;
+let truckNum = 0;
 const playing = document.getElementById("playing");
-var playButton = document.querySelector("#play");
-var title = document.querySelector("#title");
-var animationFrameId;
-var durationInSeconds;
-// var shuffle = false;
-// var repeat = false;
+let playButton = document.querySelector("#play");
+let title = document.querySelector("#title");
+let animationFrameId;
+let durationInSeconds;
 
 const seekbar = document.getElementById("seekbar");
 
@@ -38,42 +37,51 @@ const ctx = new AudioContext();
 //↑で設定したファイルの読み込み
 function audioPlayer() {
     ctx.suspend();
-    playing.src = path + "/" + musics[num];
-    const audioPath = playing.src.substring(8)
 
-    // console.log('Music Folder :', musics[num]);
+    clearPlayer();
+    playing.src = path + "/" + musics[truckNum];
+    const audioPath = playing.src.substring(8);
+    artist.innerHTML="";
+    title.innerHTML="";
+    image.src="";
+
+    // console.log('Music Folder :', musics[truckNum]);
 
 
     //メタデータから画像、タイトル、アーティスト名を抜き出して表示
     mm.parseFile(audioPath)
         .then(metadata => {
             console.log('ID3 Metadata:', metadata.common);
-            const jacket = metadata.common.picture[0].data
-            // console.log(jacket);
-            var blob = new Blob([jacket], { type: 'image/jpeg' }); 
-            var imageUrl = URL.createObjectURL(blob);
-            imageUrl = imageUrl;
-            console.log(imageUrl);
-            // 画像要素を表示
-            image.src = imageUrl;
-            console.log(image.src);
+           
 
             //タイトル
-            if(metadata.common.title!=null){
-                title.innerHTML=metadata.common.title;
-            }else{
-                title.innerHTML=musics[num]
+            if (metadata.common.title != null || metadata.common.title != "") {
+                title.innerHTML = metadata.common.title;
+            } else {
+                title.innerHTML = musics[truckNum]
             }
 
             //アーティスト
             const artist = document.getElementById("artist");
-            if(metadata.common.artist!=null){
-            artist.innerHTML=metadata.common.artist;
-            }else if(metadata.common.albumartist!=null){
-                artist.innerHTML=metadata.common.albumartist;
-            }else{
-                 artist.innerHTML="unknown";
+            if (metadata.common.artist != null ||metadata.common.artist != "") {
+                artist.innerHTML = metadata.common.artist;
+            } else if (metadata.common.albumartist != null) {
+                artist.innerHTML = metadata.common.albumartist;
+            } else {
+                artist.innerHTML = "unknown";
             }
+
+            // if(metadata.common.picture[0]){
+                const jacket = metadata.common.picture[0].data
+                // }
+                // console.log(jacket);
+                let blob = new Blob([jacket], { type: 'image/jpeg' });
+                let imageUrl = URL.createObjectURL(blob);
+                imageUrl = imageUrl;
+                console.log(imageUrl);
+                // 画像要素を表示
+                image.src = imageUrl;
+                console.log(image.src);
 
         })
         .catch(err => {
@@ -81,17 +89,17 @@ function audioPlayer() {
         });
 
 
-        //楽曲の長さを取得
-        function fetchArrayBuffer(url) {
-            return fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.arrayBuffer();
-                });
-        }
-        
+    //楽曲の長さを取得
+    function fetchArrayBuffer(url) {
+        return fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.arrayBuffer();
+            });
+    }
+
     fetchArrayBuffer(playing.src)
         .then(arrayBuffer => {
 
@@ -100,7 +108,7 @@ function audioPlayer() {
                     // AudioBufferのdurationを取得
 
                     console.log('ID3 Metadata:', playing.src);
-                    const durationInSeconds = audioBuffer.duration;
+                    durationInSeconds = audioBuffer.duration;
                     resolve(durationInSeconds);
                 }, (error) => {
                     reject(error);
@@ -146,10 +154,10 @@ playButton.addEventListener("click", function () {
 
 document.querySelector("#next").addEventListener("click", function () {
 
-    if (num < musics.length - 1) {
-        num += 1;
+    if (truckNum < musics.length - 1) {
+        truckNum += 1;
     } else {
-        num = 0;
+        truckNum = 0;
     }
     audioPlayer();
 
@@ -165,14 +173,13 @@ document.querySelector("#next").addEventListener("click", function () {
         audioElement.pause();
         playButton.dataset.playing = "false"
     }
-    clearPlayer();
 });
 
 document.querySelector("#prev").addEventListener("click", function () {
 
-    num -= 1;
-    if (num < 0) {
-        num = 0;
+    truckNum -= 1;
+    if (truckNum < 0) {
+        truckNum = 0;
     }
     audioPlayer();
 
@@ -205,7 +212,7 @@ function displayCurrentTime() {
     currentminutes = currentminutes < 10 ? '0' + currentminutes : currentminutes;
     currentseconds = currentseconds < 10 ? '0' + currentseconds : currentseconds;
 
-    var now = document.querySelector("#now");
+    let now = document.querySelector("#now");
     now.innerHTML = ` ${currentminutes}:${currentseconds}`;
     seekbar.value = 0 + (100 - 0) * (audioElement.currentTime / durationInSeconds);
     animationFrameId = requestAnimationFrame(displayCurrentTime);
@@ -222,7 +229,7 @@ function displayDuration(duration) {
     // 2桁表示のためのゼロパディング
     durationminutes = durationminutes < 10 ? '0' + durationminutes : durationminutes;
     durationseconds = durationseconds < 10 ? '0' + durationseconds : durationseconds;
-    var max = document.getElementById("max");
+    let max = document.getElementById("max");
     max.innerHTML = ` ${durationminutes}:${durationseconds}`;
 
 }
@@ -239,7 +246,7 @@ document.addEventListener("DOMContentLoaded", function () {
     now.innerText = "00:00";
 
     seekbar.addEventListener("input", function () {
-        var seekedTime;
+        let seekedTime;
         //楽曲の長さ*{シークバーの値(0～100)}%に現在時間を変更
         seekedTime = (seekbar.value / 100) * durationInSeconds;
         let durationminutes = Math.floor(seekedTime / 60);
@@ -256,11 +263,49 @@ document.addEventListener("DOMContentLoaded", function () {
 
 document.querySelector("#repeat").addEventListener("click", function () {
 
-    if(audioElement.loop==true){
-        audioElement.loop=false
+    if (audioElement.loop == true) {
+        audioElement.loop = false
         console.log("loop=false")
-    }else{
-        audioElement.loop=true
+    } else {
+        audioElement.loop = true
         console.log("loop=true")
     }
+});
+
+
+document.querySelector("#title").addEventListener("click", function () {
+    const artist = document.getElementById("title");
+    artist.contentEditable = true;
+    artist.focus();
+})
+
+document.querySelector("#artist").addEventListener("click", function () {
+    const artist = document.getElementById("artist");
+    artist.contentEditable = true;
+    artist.focus();
+})
+
+document.querySelector("#title").addEventListener("blur", function () {
+    const title = document.getElementById("title");
+    let strTitle = title.innerHTML
+    let tagTitle = {
+        title: strTitle,
+    }
+    if (strTitle != "") {
+        id3.update(tagTitle, path + "/" + musics[truckNum]);
+    }
+    strTitle ="";
+    audioPlayer()
+});
+document.querySelector("#artist").addEventListener("blur", function () {
+    const artist = document.getElementById("artist");
+    let strArtist = artist.innerHTML
+    let tagAritst = {
+        artist: strArtist,
+    }
+    if (strArtist != "") {
+        id3.update(tagAritst, path + "/" + musics[truckNum]);
+    }
+    strArtist ="";
+    audioPlayer()
 });

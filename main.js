@@ -35,6 +35,7 @@ function createWindow() {
       return [];
     }
   });
+  
 }
 
 // This method will be called when Electron has finished
